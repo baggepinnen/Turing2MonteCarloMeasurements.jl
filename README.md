@@ -4,7 +4,7 @@
 [![Codecov](https://codecov.io/gh/baggepinnen/Turing2MonteCarloMeasurements.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/baggepinnen/Turing2MonteCarloMeasurements.jl)
 [![arXiv article](https://img.shields.io/badge/article-arXiv%3A2001.07625-B31B1B)](https://arxiv.org/abs/2001.07625)
 
-This package serves as an interface between [Turing.jl](https://github.com/TuringLang/Turing.jl) and [MonteCarloMeasurements.jl](https://github.com/baggepinnen/MonteCarloMeasurements.jl). Turing, as a probabilistic programming language and MCMC inference engine, produces results in the form of a `Chain`, a type that internally contains all the samples produced during inference. This chain is a bit awkward to work with in it's natural form, why this package exists and allows for the conversion of a chain to a named tuple of `Particles` from MonteCarloMeasurements.jl.
+This package serves as an interface between [Turing.jl](https://github.com/TuringLang/Turing.jl) and [MonteCarloMeasurements.jl](https://github.com/baggepinnen/MonteCarloMeasurements.jl). Turing, as a probabilistic programming language and MCMC inference engine, produces results in the form of a `Chain`, a type that internally contains all the samples produced during inference. This chain is a bit awkward to work with in its natural form, why this package exists and allows for the conversion of a chain to a named tuple of `Particles` from MonteCarloMeasurements.jl.
 
 The probabilisitc programming language [Soss.jl](https://github.com/cscherrer/Soss.jl) already has support for `Particles` built in.
 
