@@ -3,7 +3,17 @@ uuid = "d5f69e58-3735-4fb1-9f31-04d391be4687"
 authors = ["Fredrik Bagge Carlson"]
 version = "0.1.0"
 
+[deps]
+AxisArrays = "39de3d68-74b9-583c-8d2d-e117c070f3a9"
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+MonteCarloMeasurements = "0987c9cc-fe09-11e8-30f0-b96dd679fdca"
+Turing = "fce5fe82-541a-59a6-adf8-730c64b5f9a0"
+
 [compat]
+AxisArrays = "0.3, 0.4"
+Distributions = "0.20, 0.21, 0.22"
+MonteCarloMeasurements = "0.5, 0.6, 0.7"
+Turing = "0.8"
 julia = "1"
 
 [extras]
