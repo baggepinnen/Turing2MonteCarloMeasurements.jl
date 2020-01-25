@@ -5,11 +5,11 @@ using MonteCarloMeasurements, Turing, AxisArrays
 export Particles
 
 function MonteCarloMeasurements.Particles(t::NTuple{N, <:AxisArrays.AxisArray}; crop=0) where N
-    [adapted_particles(t[i].data[crop+1:end]) for i in 1:N]
+    [adapted_particles(t[i].data[crop+1:end,:]) for i in 1:N]
 end
 
 function MonteCarloMeasurements.Particles(a::AxisArrays.AxisArray; crop=0)
-    adapted_particles(a.data[crop+1:end])
+    adapted_particles(a.data[crop+1:end,:])
 end
 
 
@@ -37,7 +37,7 @@ end
 
 function adapted_particles(v)
     T = float(typeof(v[1]))
-    Particles(T.(v))
+    Particles(vec(T.(v)))
 end
 
 end # module
