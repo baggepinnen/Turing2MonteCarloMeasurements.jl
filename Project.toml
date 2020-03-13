@@ -12,7 +12,7 @@ Turing = "fce5fe82-541a-59a6-adf8-730c64b5f9a0"
 [compat]
 AxisArrays = "0.3, 0.4"
 Distributions = "0.20, 0.21, 0.22"
-MonteCarloMeasurements = "0.5, 0.6, 0.7"
+MonteCarloMeasurements = "0.5, 0.6, 0.7, 0.8"
 Turing = "0.8"
 julia = "1"
 
