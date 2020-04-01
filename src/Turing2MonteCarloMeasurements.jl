@@ -2,7 +2,7 @@ module Turing2MonteCarloMeasurements
 
 using MonteCarloMeasurements, Turing, AxisArrays
 
-export Particles
+export Particles, truthplot
 
 function MonteCarloMeasurements.Particles(t::NTuple{N, <:AxisArrays.AxisArray}; crop=0) where N
     [adapted_particles(t[i].data[crop+1:end,:]) for i in 1:N]
@@ -38,6 +38,35 @@ end
 function adapted_particles(v)
     T = float(typeof(v[1]))
     Particles(vec(T.(v)))
+end
+
+
+function truthplot(truth::AbstractVector, p::AbstractVector, fn; kwargs...)
+    figs = truthplot.(truth, p, fn, axis=false, title=string(fn), titlefont=8)
+    plot(figs...)
+end
+
+function truthplot(truth::Number, p::AbstractParticles, fn; kwargs...)
+    fig = density(p; title=string(fn), lab="ess: $(round(Int,ess(p)))", kwargs...)
+    vline!(fig,[truth], lab="")
+    fig
+end
+
+function truthplot(truth::NamedTuple, p::NamedTuple; kwargs...)
+    plots = []
+    for fn in fieldnames(truth)
+        f   = getfield(truth,fn)
+        local pf
+        try
+            pf  = getfield(p,fn)
+        catch
+            continue
+        end
+        fig = truthplot(f, pf, fn; kwargs...)
+        push!(plots,fig)
+    end
+    display.(plots)
+    plots
 end
 
 end # module
