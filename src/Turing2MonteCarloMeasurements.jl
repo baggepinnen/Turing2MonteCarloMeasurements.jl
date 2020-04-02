@@ -54,7 +54,7 @@ end
 
 function truthplot(truth::NamedTuple, p::NamedTuple; kwargs...)
     plots = []
-    for fn in fieldnames(truth)
+    for fn in fieldnames(typeof(truth))
         f   = getfield(truth,fn)
         local pf
         try
