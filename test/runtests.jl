@@ -1,6 +1,7 @@
 using Turing2MonteCarloMeasurements
 using Test
-using Turing, Distributions
+using MonteCarloMeasurements, Turing, Distributions
+ess = MonteCarloMeasurements.ess
 
 @testset "Turing2MonteCarloMeasurements.jl" begin
 
