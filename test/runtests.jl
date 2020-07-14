@@ -1,9 +1,9 @@
 using Turing2MonteCarloMeasurements
 using Test
 using MonteCarloMeasurements, Turing, Distributions
-ess = MonteCarloMeasurements.ess
 
 @testset "Turing2MonteCarloMeasurements.jl" begin
+    # ess = MonteCarloMeasurements.ess
 
     nr = 3 # Number of reviewers
     na = 5 # Number of articles
