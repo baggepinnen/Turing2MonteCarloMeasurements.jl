@@ -47,7 +47,7 @@ function truthplot(truth::AbstractVector, p::AbstractVector, fn; kwargs...)
 end
 
 function truthplot(truth::Number, p::AbstractParticles, fn; kwargs...)
-    fig = density(p; title=string(fn), lab="ess: $(round(Int,ess(p)))", kwargs...)
+    fig = density(p; title=string(fn), lab="ess: $(round(Int,MonteCarloMeasurements.ess(p)))", kwargs...)
     vline!(fig,[truth], lab="")
     fig
 end
