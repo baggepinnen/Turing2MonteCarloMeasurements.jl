@@ -1,6 +1,6 @@
 module Turing2MonteCarloMeasurements
 
-using MonteCarloMeasurements, Turing, AxisArrays
+using MonteCarloMeasurements, Turing, AxisArrays, Plots, StatsPlots
 
 export Particles, truthplot
 
