@@ -1,10 +1,12 @@
 # Turing2MonteCarloMeasurements
 
-[![Build Status](https://travis-ci.org/baggepinnen/Turing2MonteCarloMeasurements.jl.svg?branch=master)](https://travis-ci.org/baggepinnen/Turing2MonteCarloMeasurements.jl)
+[![CI](https://github.com/baggepinnen/Turing2MonteCarloMeasurements.jl/actions/workflows/CI.yml/badge.svg?branch=master)](https://github.com/baggepinnen/Turing2MonteCarloMeasurements.jl/actions/workflows/CI.yml)
 [![Codecov](https://codecov.io/gh/baggepinnen/Turing2MonteCarloMeasurements.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/baggepinnen/Turing2MonteCarloMeasurements.jl)
 [![arXiv article](https://img.shields.io/badge/article-arXiv%3A2001.07625-B31B1B)](https://arxiv.org/abs/2001.07625)
 
 This package serves as an interface between [Turing.jl](https://github.com/TuringLang/Turing.jl) and [MonteCarloMeasurements.jl](https://github.com/baggepinnen/MonteCarloMeasurements.jl). Turing, as a probabilistic programming language and MCMC inference engine, produces results in the form of a `Chain`, a type that internally contains all the samples produced during inference. This chain is a bit awkward to work with in its natural form, why this package exists and allows for the conversion of a chain to a named tuple of `Particles` from MonteCarloMeasurements.jl.
+
+Since Turing v0.49, `sample` returns a `FlexiChain` from [FlexiChains.jl](https://github.com/JuliaBayes/FlexiChains.jl) by default. FlexiChains provides its own conversion `Particles(chain::FlexiChain)`, which returns an `OrderedDict` mapping each variable name to `Particles` (or a `NamedTuple` with `Particles(chain, NamedTuple)`). The conversion provided by this package operates on an `MCMCChains.Chains` and supports discarding initial samples through the keyword argument `crop`. To obtain such a chain, pass `chain_type = MCMCChains.Chains` to `sample`, as in the examples below.
 
 # Visualization
 In this example, we simulate a review process where a number of reviewers are assigning scores to a number of articles. The generation of the data and the model specification are hidden under the collapsed section below.
@@ -12,7 +14,7 @@ In this example, we simulate a review process where a number of reviewers are as
 <summary>Generate fake data and specify a model</summary>
 
 ```julia
-using Turing, Distributions, Plots, Turing2MonteCarloMeasurements
+using Turing, Distributions, MCMCChains, StatsPlots, Turing2MonteCarloMeasurements
 
 nr = 5 # Number of reviewers
 na = 10 # Number of articles
@@ -38,7 +40,7 @@ m = @model reviewscore(R,nr,na) = begin
     for j = 1:na
         true_article_score[j] ~ Normal(0,2.5)
     end
-    rσ ~ TruncatedNormal(1,10,0,100)
+    rσ ~ truncated(Normal(1,10),0,100)
     for j = 1:na
         for i = 1:nr
             R[i,j] ~ Normal(reviewer_bias[i] + true_article_score[j] + reviewer_gain[i]*true_article_score[j], rσ)
@@ -51,7 +53,7 @@ end
 
 We now focus on how to analyze the inference result. The chain is easily converted using the function `Particles`
 ```julia
-julia> chain = sample(reviewscore(R,nr,na), HMC(0.05, 10), 1500);
+julia> chain = sample(reviewscore(R,nr,na), HMC(0.05, 10), 1500; chain_type=MCMCChains.Chains);
 
 julia> cp = Particles(chain, crop=500); # crop discards the first 500 samples
 
@@ -85,7 +87,7 @@ Like above, we hide the data generation under a collapsable section.
 <summary>Generate fake data</summary>
 
 ```julia
-using Turing, Turing2MonteCarloMeasurements, Distributions, MonteCarloMeasurements
+using Turing, Turing2MonteCarloMeasurements, Distributions, MonteCarloMeasurements, MCMCChains, StatsPlots
 coefficients = randn(5)
 x = randn(30, 5)
 y = x * coefficients .+ 1 .+ 0.4 .* randn.()
@@ -98,7 +100,7 @@ x = x[sI,:]
 ```julia
 @model linear_regression(x, y, n_obs, n_vars) = begin
     # Set variance prior.
-    σ₂ ~ TruncatedNormal(0,100, 0, Inf)
+    σ₂ ~ truncated(Normal(0,100); lower=0)
 
     # Set intercept prior.
     intercept ~ Normal(0, 3)
@@ -117,7 +119,7 @@ x = x[sI,:]
 end;
 n_obs, n_vars = size(x)
 model = linear_regression(x, y, n_obs, n_vars)
-chain = sample(model, NUTS(0.65), 2500);
+chain = sample(model, NUTS(0.65), 2500; chain_type=MCMCChains.Chains);
 ```
 
 In order to form the prediction, the original tutorial did

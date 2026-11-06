@@ -1,6 +1,7 @@
 module Turing2MonteCarloMeasurements
 
 using MonteCarloMeasurements, Turing, AxisArrays, StatsPlots
+using MCMCChains: Chains, get_params
 
 export Particles, truthplot
 

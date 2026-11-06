@@ -1,6 +1,6 @@
 using Turing2MonteCarloMeasurements
 using Test
-using MonteCarloMeasurements, Turing, Distributions
+using MonteCarloMeasurements, Turing, Distributions, MCMCChains
 
 @testset "Turing2MonteCarloMeasurements.jl" begin
     # ess = MonteCarloMeasurements.ess
@@ -33,7 +33,7 @@ using MonteCarloMeasurements, Turing, Distributions
         (reviewer_pop_bias=reviewer_pop_bias, reviewer_pop_gain=reviewer_pop_gain, reviewer_bias=reviewer_bias, reviewer_gain=reviewer_gain)
     end
     m = reviewscore(R,nr,na)
-    chain = sample(m, HMC(0.05, 10), 1500)
+    chain = sample(m, HMC(0.05, 10), 1500; chain_type=MCMCChains.Chains, progress=false)
     cp = Particles(chain, crop=500);
     @test size(cp.reviewer_bias) == size(reviewer_bias)
     @test size(cp.rσ) == ()
