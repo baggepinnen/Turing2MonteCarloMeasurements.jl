@@ -8,13 +8,22 @@ This package serves as an interface between [Turing.jl](https://github.com/Turin
 
 Since Turing v0.49, `sample` returns a `FlexiChain` from [FlexiChains.jl](https://github.com/JuliaBayes/FlexiChains.jl) by default. FlexiChains provides its own conversion `Particles(chain::FlexiChain)`, which returns an `OrderedDict` mapping each variable name to `Particles` (or a `NamedTuple` with `Particles(chain, NamedTuple)`). The conversion provided by this package operates on an `MCMCChains.Chains` and supports discarding initial samples through the keyword argument `crop`. To obtain such a chain, pass `chain_type = MCMCChains.Chains` to `sample`, as in the examples below.
 
+The package depends only on MCMCChains, AxisArrays and MonteCarloMeasurements; Turing is not loaded by `using Turing2MonteCarloMeasurements`. The function `truthplot`, which plots the posterior densities together with the true parameter values, is defined in a package extension and becomes available after `using StatsPlots`.
+
+# Installation
+```julia
+using Pkg
+Pkg.add("Turing2MonteCarloMeasurements")
+```
+The examples below additionally use Turing, Distributions, MCMCChains and StatsPlots.
+
 # Visualization
 In this example, we simulate a review process where a number of reviewers are assigning scores to a number of articles. The generation of the data and the model specification are hidden under the collapsed section below.
 <details>
 <summary>Generate fake data and specify a model</summary>
 
 ```julia
-using Turing, Distributions, MCMCChains, StatsPlots, Turing2MonteCarloMeasurements
+using Turing, Distributions, MCMCChains, MonteCarloMeasurements, StatsPlots, Turing2MonteCarloMeasurements
 
 nr = 5 # Number of reviewers
 na = 10 # Number of articles
@@ -53,15 +62,12 @@ end
 
 We now focus on how to analyze the inference result. The chain is easily converted using the function `Particles`
 ```julia
-julia> chain = sample(reviewscore(R,nr,na), HMC(0.05, 10), 1500; chain_type=MCMCChains.Chains);
+chain = sample(reviewscore(R,nr,na), HMC(0.05, 10), 1500; chain_type=MCMCChains.Chains)
 
-julia> cp = Particles(chain, crop=500); # crop discards the first 500 samples
+cp = Particles(chain, crop=500) # crop discards the first 500 samples
 
-julia> cp.reviewer_pop_bias
-Part1000(0.2605 ± 0.72)
-
-julia> cp.reviewer_pop_gain
-Part1000(0.1831 ± 0.62)
+cp.reviewer_pop_bias # Part1000(0.2605 ± 0.72)
+cp.reviewer_pop_gain # Part1000(0.1831 ± 0.62)
 ```
 Particles can be plotted
 ```julia
@@ -79,7 +85,7 @@ plot(f1,f2)
 
 
 # Prediction
-The [linear-regression tutorial](https://turing.ml/dev/tutorials/5-linearregression/) for Turing contains instructions on how to do prediction using the inference result. In the tutorial, the posterior mean of the parameters is used to form the prediction. Using `Particles`, we can instead form the prediction using the entire posterior distribution.
+The [linear-regression tutorial](https://turinglang.org/docs/tutorials/bayesian-linear-regression/) for Turing contains instructions on how to do prediction using the inference result. In the tutorial, the posterior mean of the parameters is used to form the prediction. Using `Particles`, we can instead form the prediction using the entire posterior distribution.
 
 Like above, we hide the data generation under a collapsable section.
 
@@ -158,4 +164,4 @@ vline!(coefficients', l=(3,), lab="True value")
 [![arXiv article](https://img.shields.io/badge/article-arXiv%3A2001.07625-B31B1B)](https://arxiv.org/abs/2001.07625)
 
 ### Turing
-[![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://turing.ml/dev/docs/using-turing/)
+[![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://turinglang.org/docs/)
