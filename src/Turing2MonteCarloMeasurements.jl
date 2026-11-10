@@ -1,6 +1,6 @@
 module Turing2MonteCarloMeasurements
 
-using MonteCarloMeasurements, Turing, AxisArrays, StatsPlots
+using MonteCarloMeasurements, AxisArrays
 using MCMCChains: Chains, get_params
 
 export Particles, truthplot
@@ -41,33 +41,13 @@ function adapted_particles(v)
     Particles(vec(T.(v)))
 end
 
+"""
+    truthplot(truth::NamedTuple, p::NamedTuple; kwargs...)
 
-function truthplot(truth::AbstractVector, p::AbstractVector, fn; kwargs...)
-    figs = truthplot.(truth, p, fn, axis=false, title=string(fn), titlefont=8)
-    plot(figs...)
-end
+Plot the density of each field of the named tuple of particles `p`, together with a vertical line at the corresponding true value in `truth`. Fields of `truth` that are not present in `p` are skipped. Returns a vector of plots.
 
-function truthplot(truth::Number, p::AbstractParticles, fn; kwargs...)
-    fig = density(p; title=string(fn), lab="ess: $(round(Int,MonteCarloMeasurements.ess(p)))", kwargs...)
-    vline!(fig,[truth], lab="")
-    fig
-end
-
-function truthplot(truth::NamedTuple, p::NamedTuple; kwargs...)
-    plots = []
-    for fn in fieldnames(typeof(truth))
-        f   = getfield(truth,fn)
-        local pf
-        try
-            pf  = getfield(p,fn)
-        catch
-            continue
-        end
-        fig = truthplot(f, pf, fn; kwargs...)
-        push!(plots,fig)
-    end
-    display.(plots)
-    plots
-end
+This function is available after `using StatsPlots`.
+"""
+function truthplot end
 
 end # module
